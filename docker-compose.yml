@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: voting_app
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      backend:
+        aliases:
+          - db
+    ports:
+      - "5432:5432"
+
+  vote:
+    build:
+      context: ./vote
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=voting_app
+    depends_on:
+      - postgres
+    networks:
+      - backend
+    ports:
+      - "8000:80" 
+
+  result:
+    build:
+      context: ./result
+    ports:
+      - "8090:80"
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      - vote
+
+volumes:
+  postgres_data:
+
+networks:
+  backend:
+  frontend:
