@@ -29,7 +29,7 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
                                                      usernameVariable: 'benng12', 
-                                                     passwordVariable: 'dckr_pat_KR8VWAiBkWJDZf2WSlDyE9i5JoU')]) {
+                                                     passwordVariable: 'Avoir2profil#Dev#Sec.')]) {
                         sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
                     }
                 }
