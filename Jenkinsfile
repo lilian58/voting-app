@@ -1,9 +1,7 @@
-pipeline {
+pipeline { 
     agent any
 
     environment {
-        DOCKER_HUB_USERNAME = 'benng12'
-        DOCKER_HUB_PASSWORD = 'passer5..'
         IMAGE_VOTE = 'benng12/voting-app-vote'
         IMAGE_RESULT = 'benng12/voting-app-result'
         IMAGE_WORKER = 'benng12/voting-app-worker'
@@ -29,11 +27,21 @@ pipeline {
         stage('Login to Docker Hub') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                        docker.image("${IMAGE_VOTE}:latest").push()
-                        docker.image("${IMAGE_RESULT}:latest").push()
-                        docker.image("${IMAGE_WORKER}:latest").push()
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
+                                                     usernameVariable: 'benng12', 
+                                                     passwordVariable: 'dckr_pat_KR8VWAiBkWJDZf2WSlDyE9i5JoU')]) {
+                        sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
                     }
+                }
+            }
+        }
+
+        stage('Push Docker Images') {
+            steps {
+                script {
+                    sh "docker push ${IMAGE_VOTE}:latest"
+                    sh "docker push ${IMAGE_RESULT}:latest"
+                    sh "docker push ${IMAGE_WORKER}:latest"
                 }
             }
         }
