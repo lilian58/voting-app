@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_USERNAME = 'lilian1000'
-        DOCKER_HUB_PASSWORD = 'dockerT&s1'
+        DOCKER_HUB_USERNAME = 'benng12'
+        DOCKER_HUB_PASSWORD = 'passer5..'
         IMAGE_VOTE = 'voting-app-vote'
         IMAGE_RESULT = 'voting-app-result'
         IMAGE_WORKER = 'voting-app-worker'
