@@ -4,22 +4,21 @@ pipeline {
     environment {
         DOCKER_HUB_USERNAME = 'benng12'
         DOCKER_HUB_PASSWORD = 'passer5..'
-        IMAGE_VOTE = 'voting-app-vote'
-        IMAGE_RESULT = 'voting-app-result'
-        IMAGE_WORKER = 'voting-app-worker'
+        IMAGE_VOTE = 'benng12/voting-app-vote'
+        IMAGE_RESULT = 'benng12/voting-app-result'
+        IMAGE_WORKER = 'benng12/voting-app-worker'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/lilian58/voting-app.git'  
+                git 'https://github.com/lilian58/voting-app.git'
             }
         }
 
         stage('Build Docker Images') {
             steps {
                 script {
-                    // Construire les images Docker
                     docker.build("${IMAGE_VOTE}:latest", './vote')
                     docker.build("${IMAGE_RESULT}:latest", './result')
                     docker.build("${IMAGE_WORKER}:latest", './worker')
@@ -30,8 +29,7 @@ pipeline {
         stage('Login to Docker Hub') {
             steps {
                 script {
-                    // Se connecter à Docker Hub avec les credentials
-                    docker.withRegistry('', 'dockerhub-credentials') {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
                         docker.image("${IMAGE_VOTE}:latest").push()
                         docker.image("${IMAGE_RESULT}:latest").push()
                         docker.image("${IMAGE_WORKER}:latest").push()
@@ -43,9 +41,8 @@ pipeline {
         stage('Deploy to Docker Compose') {
             steps {
                 script {
-                    // Déployer avec Docker Compose
-                    sh 'docker-compose down'  // Arrêter les conteneurs existants
-                    sh 'docker-compose up -d'  // Démarrer les nouveaux conteneurs avec les dernières images
+                    sh 'docker-compose -f ./docker-compose.yml down'
+                    sh 'docker-compose -f ./docker-compose.yml up -d'
                 }
             }
         }
@@ -53,7 +50,7 @@ pipeline {
 
     post {
         always {
-            cleanWs()  // Nettoyer l'environnement de travail après le pipeline
+            cleanWs()
         }
     }
 }
